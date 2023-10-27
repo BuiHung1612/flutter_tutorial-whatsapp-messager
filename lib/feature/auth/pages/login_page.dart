@@ -1,8 +1,11 @@
+import 'package:country_picker/country_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:whatsapp_messenger/common/extentions/custom_theme_extention.dart';
+import 'package:whatsapp_messenger/common/helper/show_alert_dialog.dart';
 import 'package:whatsapp_messenger/common/utils/colors.dart';
 import 'package:whatsapp_messenger/common/widgets/custom_elevated_button.dart';
-import 'package:whatsapp_messenger/feature/auth/pages/custom_text_field.dart';
+import 'package:whatsapp_messenger/common/widgets/custom_icon_button.dart';
+import 'package:whatsapp_messenger/feature/auth/widgets/custom_text_field.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -32,6 +35,52 @@ class _LoginPageState extends State<LoginPage> {
     super.dispose();
   }
 
+  showCountryCodePicker() {
+    showCountryPicker(
+        context: context,
+        onSelect: (country) {
+          countryCodeController.text = country.phoneCode;
+          countryNameController.text = country.name;
+        },
+        showPhoneCode: true,
+        favorite: ['VN'],
+        countryListTheme: CountryListThemeData(
+            bottomSheetHeight: 600,
+            backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+            searchTextStyle: TextStyle(color: context.theme.greyColor),
+            flagSize: 22,
+            borderRadius: BorderRadius.circular(20),
+            textStyle: TextStyle(color: context.theme.greyColor),
+            inputDecoration: InputDecoration(
+                labelStyle: TextStyle(color: context.theme.textColor),
+                prefixIcon: const Icon(
+                  Icons.language,
+                  color: AppColor.greenDark,
+                ),
+                hintText: "Tìm quốc gia",
+                hintStyle: TextStyle(color: context.theme.greyColor),
+                enabledBorder: UnderlineInputBorder(
+                  borderSide: BorderSide(
+                      color: context.theme.greyColor!.withOpacity(0.2)),
+                ),
+                focusedBorder: const UnderlineInputBorder(
+                  borderSide: BorderSide(color: AppColor.greenDark),
+                ))));
+  }
+
+  sendOtp() {
+    final phone = phoneNumberController.text;
+    final name = countryNameController.text;
+    if (phone.isEmpty) {
+      return showAlertDialog(
+          context: context, message: "Vui lòng nhập số điện thoại của bạn.");
+    } else if (phone.length < 9) {
+      return showAlertDialog(
+          context: context,
+          message: "Bạn vừa nhập số điện thoại quá ngắn tại quốc gia: $name");
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -43,17 +92,10 @@ class _LoginPageState extends State<LoginPage> {
           style: TextStyle(color: context.theme.authAppbarTextColor),
         ),
         actions: [
-          IconButton(
-              splashColor: Colors.transparent,
-              splashRadius: 22,
-              padding: EdgeInsets.zero,
-              iconSize: 22,
-              onPressed: () {},
-              constraints: const BoxConstraints(minWidth: 40),
-              icon: Icon(
-                Icons.more_vert,
-                color: context.theme.greyColor,
-              ))
+          CustomIconButton(
+            onTap: () {},
+            icon: Icons.more_vert,
+          )
         ],
       ),
       body: Column(
@@ -78,7 +120,7 @@ class _LoginPageState extends State<LoginPage> {
             padding: const EdgeInsets.symmetric(horizontal: 50),
             child: CustomTextField(
               controller: countryNameController,
-              onTap: () {},
+              onTap: showCountryCodePicker,
               readOnly: true,
               suffixIcon: const Icon(
                 (Icons.arrow_drop_down),
@@ -98,7 +140,7 @@ class _LoginPageState extends State<LoginPage> {
                   child: CustomTextField(
                     controller: countryCodeController,
                     prefixText: "+",
-                    onTap: () {},
+                    onTap: showCountryCodePicker,
                     readOnly: true,
                   ),
                 ),
@@ -126,7 +168,7 @@ class _LoginPageState extends State<LoginPage> {
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       floatingActionButton: CustomElevatedButton(
-        onPressed: () {},
+        onPressed: sendOtp,
         text: "Tiếp",
         buttonWidth: 90,
       ),

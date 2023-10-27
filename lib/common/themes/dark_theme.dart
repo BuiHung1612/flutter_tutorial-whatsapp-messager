@@ -19,6 +19,7 @@ ThemeData darkTheme() {
               shadowColor: Colors.transparent)),
       unselectedWidgetColor: AppColor.greyDark,
       appBarTheme: const AppBarTheme(
+          titleTextStyle: TextStyle(fontSize: 18),
           systemOverlayStyle: SystemUiOverlayStyle(
               statusBarColor: Colors.transparent,
               statusBarIconBrightness: Brightness.light)),
@@ -26,5 +27,9 @@ ThemeData darkTheme() {
           backgroundColor: AppColor.greyBackground,
           modalBackgroundColor: AppColor.greyBackground,
           shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.vertical(top: Radius.circular(20)))));
+              borderRadius: BorderRadius.vertical(top: Radius.circular(20)))),
+      dialogBackgroundColor: AppColor.greyBackground,
+      dialogTheme: DialogTheme(
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(10))));
 }

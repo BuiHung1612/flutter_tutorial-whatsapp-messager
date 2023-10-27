@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:whatsapp_messenger/common/themes/dark_theme.dart';
 import 'package:whatsapp_messenger/common/themes/light_theme.dart';
-import 'package:whatsapp_messenger/feature/auth/login_page.dart';
+import 'package:whatsapp_messenger/feature/auth/pages/login_page.dart';
+import 'package:whatsapp_messenger/feature/auth/pages/verification_page.dart';
 import 'package:whatsapp_messenger/feature/welcome/pages/welcome_page.dart';
 
 void main() {
@@ -20,6 +21,6 @@ class MyApp extends StatelessWidget {
         darkTheme: darkTheme(),
         themeMode: ThemeMode.system,
         debugShowCheckedModeBanner: false,
-        home: const LoginPage());
+        home: const VerificationPage());
   }
 }
