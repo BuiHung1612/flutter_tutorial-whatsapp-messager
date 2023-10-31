@@ -1,20 +1,22 @@
 import 'package:country_picker/country_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:whatsapp_messenger/common/extentions/custom_theme_extention.dart';
 import 'package:whatsapp_messenger/common/helper/show_alert_dialog.dart';
 import 'package:whatsapp_messenger/common/utils/colors.dart';
 import 'package:whatsapp_messenger/common/widgets/custom_elevated_button.dart';
 import 'package:whatsapp_messenger/common/widgets/custom_icon_button.dart';
+import 'package:whatsapp_messenger/feature/auth/controller/auth_controller.dart';
 import 'package:whatsapp_messenger/feature/auth/widgets/custom_text_field.dart';
 
-class LoginPage extends StatefulWidget {
+class LoginPage extends ConsumerStatefulWidget {
   const LoginPage({super.key});
 
   @override
-  State<LoginPage> createState() => _LoginPageState();
+  ConsumerState<LoginPage> createState() => _LoginPageState();
 }
 
-class _LoginPageState extends State<LoginPage> {
+class _LoginPageState extends ConsumerState<LoginPage> {
   late TextEditingController countryNameController;
   late TextEditingController countryCodeController;
   late TextEditingController phoneNumberController;
@@ -27,13 +29,13 @@ class _LoginPageState extends State<LoginPage> {
     super.initState();
   }
 
-  @override
-  void dispose() {
-    countryCodeController.dispose();
-    countryCodeController.dispose();
-    phoneNumberController.dispose();
-    super.dispose();
-  }
+  // @override
+  // void dispose() {
+  //   countryCodeController.dispose();
+  //   countryCodeController.dispose();
+  //   phoneNumberController.dispose();
+  //   super.dispose();
+  // }
 
   showCountryCodePicker() {
     showCountryPicker(
@@ -69,16 +71,22 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   sendOtp() {
-    final phone = phoneNumberController.text;
-    final name = countryNameController.text;
-    if (phone.isEmpty) {
+    final phoneNumber = phoneNumberController.text;
+    final countryName = countryNameController.text;
+    final countryCode = countryCodeController.text;
+
+    if (phoneNumber.isEmpty) {
       return showAlertDialog(
           context: context, message: "Vui lòng nhập số điện thoại của bạn.");
-    } else if (phone.length < 9) {
+    } else if (phoneNumber.length < 9) {
       return showAlertDialog(
           context: context,
-          message: "Bạn vừa nhập số điện thoại quá ngắn tại quốc gia: $name");
+          message:
+              "The phone number you entered is too short for the country: $countryName.");
     }
+
+    ref.read(authControllerProvider).authRepository.sendSmsCode(
+        context: context, phoneNumber: "+$countryCode$phoneNumber");
   }
 
   @override

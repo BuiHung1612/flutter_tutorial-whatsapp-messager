@@ -153,7 +153,7 @@ class LanguageButton extends StatelessWidget {
                 width: 8,
               ),
               Text(
-                "Tiếng Việt",
+                "English",
                 style: TextStyle(
                   color: AppColor.greenDark,
                 ),

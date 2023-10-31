@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:whatsapp_messenger/common/extentions/custom_theme_extention.dart';
+import 'package:whatsapp_messenger/common/routes/routes.dart';
 import 'package:whatsapp_messenger/common/utils/colors.dart';
 import 'package:whatsapp_messenger/common/widgets/custom_elevated_button.dart';
 import 'package:whatsapp_messenger/feature/welcome/widgets/language_button.dart';
@@ -7,6 +8,11 @@ import 'package:whatsapp_messenger/feature/welcome/widgets/privacy_and_terms.dar
 
 class WelcomePage extends StatelessWidget {
   const WelcomePage({super.key});
+
+  navigateToLoginPage(context) {
+    Navigator.of(context)
+        .pushNamedAndRemoveUntil(Routes.login, (route) => false);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -26,7 +32,7 @@ class WelcomePage extends StatelessWidget {
             child: Column(
               children: [
                 Text(
-                  "Chào mừng bạn đến với WhatsApp",
+                  "Welcome to WhatsApp",
                   style: TextStyle(
                     fontSize: 22,
                     fontWeight: FontWeight.bold,
@@ -42,8 +48,8 @@ class WelcomePage extends StatelessWidget {
             ),
           ),
           CustomElevatedButton(
-            text: "Đồng ý và tiếp tục",
-            onPressed: () {},
+            text: "AGREE AND CONTINUE",
+            onPressed: () => navigateToLoginPage(context),
           )
         ],
       ),
