@@ -4,9 +4,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:whatsapp_messenger/common/routes/routes.dart';
 import 'package:whatsapp_messenger/common/themes/dark_theme.dart';
 import 'package:whatsapp_messenger/common/themes/light_theme.dart';
-import 'package:whatsapp_messenger/feature/auth/pages/login_page.dart';
-import 'package:whatsapp_messenger/feature/auth/pages/user_info_page.dart';
-import 'package:whatsapp_messenger/feature/auth/pages/verification_page.dart';
+import 'package:whatsapp_messenger/feature/auth/controller/auth_controller.dart';
+import 'package:whatsapp_messenger/feature/home/pages/home_page.dart';
 import 'package:whatsapp_messenger/feature/welcome/pages/welcome_page.dart';
 import 'package:whatsapp_messenger/firebase_options.dart';
 
@@ -16,19 +15,30 @@ void main() async {
   runApp(const ProviderScope(child: MyApp()));
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends ConsumerWidget {
   const MyApp({super.key});
 
   // This widget is the root of your application.
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return MaterialApp(
       title: 'Whatsapp',
       theme: lightTheme(),
       darkTheme: darkTheme(),
       themeMode: ThemeMode.system,
       debugShowCheckedModeBanner: false,
-      home: const WelcomePage(),
+      home: ref.watch(userInfoAuthProvider).when(data: (user) {
+        if (user == null) return const WelcomePage();
+        return const HomePage();
+      }, error: (error, trace) {
+        return const Scaffold(
+          body: Center(child: Text("Something wrong happened!")),
+        );
+      }, loading: () {
+        return const Scaffold(
+          body: Center(child: CircularProgressIndicator()),
+        );
+      }),
       onGenerateRoute: Routes.onGenerateRoute,
     );
   }

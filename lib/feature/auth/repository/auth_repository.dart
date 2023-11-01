@@ -5,6 +5,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:whatsapp_messenger/common/helper/show_alert_dialog.dart';
+import 'package:whatsapp_messenger/common/helper/show_loading_dialog.dart';
 import 'package:whatsapp_messenger/common/models/user_modal.dart';
 import 'package:whatsapp_messenger/common/repository/firebase_storage_repository.dart';
 import 'package:whatsapp_messenger/common/routes/routes.dart';
@@ -21,6 +22,17 @@ class AuthRepository {
 
   AuthRepository({required this.firebaseAuth, required this.firestore});
 
+  Future<UserModel?> getCurrentUserInfo() async {
+    UserModel? user;
+    final userInfo = await firestore
+        .collection('users')
+        .doc(firebaseAuth.currentUser?.uid)
+        .get();
+    if (userInfo.data() == null) return user;
+    user = UserModel.fromMap(userInfo.data()!);
+    return user;
+  }
+
   void saveUserInfoToFireStore(
       {required String username,
       required var profileImage,
@@ -28,6 +40,7 @@ class AuthRepository {
       required BuildContext context,
       required bool mounted}) async {
     try {
+      showLoadingDialog(context: context, message: "Saving user info...");
       String uid = firebaseAuth.currentUser!.uid;
       String avatarUrl = profileImage is String ? profileImage : '';
 
@@ -49,7 +62,7 @@ class AuthRepository {
       Navigator.of(context)
           .pushNamedAndRemoveUntil(Routes.home, (route) => false);
     } catch (e) {
-      log('ERROR $e');
+      Navigator.pop(context);
       showAlertDialog(context: context, message: e.toString());
     }
   }
@@ -57,6 +70,9 @@ class AuthRepository {
   void sendSmsCode(
       {required BuildContext context, required String phoneNumber}) async {
     try {
+      showLoadingDialog(
+          context: context,
+          message: "Sending a verification code to $phoneNumber");
       await firebaseAuth.verifyPhoneNumber(
         phoneNumber: phoneNumber,
         verificationCompleted: (PhoneAuthCredential credential) async {
@@ -75,6 +91,7 @@ class AuthRepository {
         codeAutoRetrievalTimeout: (verificationId) {},
       );
     } on FirebaseAuth catch (e) {
+      Navigator.pop(context);
       showAlertDialog(context: context, message: e.toString());
     }
   }
@@ -85,24 +102,26 @@ class AuthRepository {
       required String otpCode,
       required bool mounted}) async {
     try {
+      showLoadingDialog(context: context, message: "Verifiying code...");
       final credential = PhoneAuthProvider.credential(
           verificationId: verificationId, smsCode: otpCode);
-      await firebaseAuth
-          .signInWithCredential(credential)
-          .then((value) => {
-                if (mounted)
-                  {
-                    Navigator.of(context).pushNamedAndRemoveUntil(
-                        Routes.userInfo, (route) => false)
-                  }
-              })
-          .catchError((error) {
-        log('KIỂM TRA TẠI ĐÂY $error');
+      UserModel? user = await getCurrentUserInfo();
+
+      await firebaseAuth.signInWithCredential(credential).then((value) async {
+        if (mounted) {
+          Navigator.of(context).pushNamedAndRemoveUntil(
+              Routes.userInfo, (route) => false,
+              arguments: user?.avatarUrl);
+        }
+      }).catchError((error) {
+        Navigator.pop(context);
         showAlertDialog(context: context, message: error.toString());
       });
     } on FirebaseAuth catch (e) {
-      log('KIỂM TRA TẠI ĐÂY $e');
-      showAlertDialog(context: context, message: e.toString());
+      if (mounted) {
+        Navigator.pop(context);
+        showAlertDialog(context: context, message: e.toString());
+      }
     }
   }
 }

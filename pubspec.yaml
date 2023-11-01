@@ -43,6 +43,9 @@ dependencies:
   flutter_riverpod: ^2.4.5
   image_picker: ^1.0.4
   photo_manager: ^2.7.2
+  path_provider: ^2.1.1
+  flutter_contacts: ^1.1.7+1
+  url_launcher: ^6.2.1
 
 flutter_native_splash:
   color: "#FFFFFF"

@@ -16,7 +16,9 @@ import 'package:whatsapp_messenger/feature/auth/pages/image_picker_page.dart';
 import 'package:whatsapp_messenger/feature/auth/widgets/custom_text_field.dart';
 
 class UserInfoPage extends ConsumerStatefulWidget {
-  const UserInfoPage({super.key});
+  const UserInfoPage({super.key, this.avatarUrl});
+
+  final String? avatarUrl;
 
   @override
   ConsumerState<UserInfoPage> createState() => _UserInfoPageState();
@@ -40,7 +42,7 @@ class _UserInfoPageState extends ConsumerState<UserInfoPage> {
     }
     ref.read(authControllerProvider).saveUserInfoToFireStore(
         username: username,
-        profileImage: imageCamera ?? imageGallery ?? '',
+        profileImage: imageCamera ?? imageGallery ?? widget.avatarUrl ?? '',
         context: context,
         mounted: mounted);
   }
@@ -198,12 +200,16 @@ class _UserInfoPageState extends ConsumerState<UserInfoPage> {
                 padding: const EdgeInsets.all(26),
                 decoration: BoxDecoration(
                     shape: BoxShape.circle,
-                    image: imageCamera != null || imageGallery != null
+                    image: imageCamera != null ||
+                            imageGallery != null ||
+                            widget.avatarUrl != null
                         ? DecorationImage(
                             fit: BoxFit.cover,
                             image: imageGallery != null
-                                ? MemoryImage(imageGallery!) as ImageProvider
-                                : FileImage(imageCamera!))
+                                ? MemoryImage(imageGallery!)
+                                : widget.avatarUrl != null
+                                    ? NetworkImage(widget.avatarUrl!)
+                                    : FileImage(imageCamera!) as ImageProvider)
                         : null,
                     border: Border.all(
                         color: imageCamera == null && imageGallery == null
@@ -213,7 +219,9 @@ class _UserInfoPageState extends ConsumerState<UserInfoPage> {
                 child: Icon(
                   Icons.add_a_photo_rounded,
                   size: 48,
-                  color: imageCamera == null && imageGallery == null
+                  color: imageCamera == null &&
+                          imageGallery == null &&
+                          widget.avatarUrl == null
                       ? context.theme.photoIconColor
                       : Colors.transparent,
                 )),

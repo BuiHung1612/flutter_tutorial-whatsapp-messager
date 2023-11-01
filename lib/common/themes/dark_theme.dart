@@ -19,10 +19,17 @@ ThemeData darkTheme() {
               shadowColor: Colors.transparent)),
       unselectedWidgetColor: AppColor.greyDark,
       appBarTheme: const AppBarTheme(
-          titleTextStyle: TextStyle(fontSize: 18),
+          backgroundColor: AppColor.greyBackground,
+          iconTheme: IconThemeData(color: AppColor.greyDark),
+          titleTextStyle: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
           systemOverlayStyle: SystemUiOverlayStyle(
               statusBarColor: Colors.transparent,
               statusBarIconBrightness: Brightness.light)),
+      tabBarTheme: const TabBarTheme(
+          unselectedLabelColor: AppColor.greyDark,
+          labelColor: AppColor.greenDark,
+          indicator: UnderlineTabIndicator(
+              borderSide: BorderSide(color: AppColor.greenDark, width: 2))),
       bottomSheetTheme: const BottomSheetThemeData(
           backgroundColor: AppColor.greyBackground,
           modalBackgroundColor: AppColor.greyBackground,
@@ -31,5 +38,7 @@ ThemeData darkTheme() {
       dialogBackgroundColor: AppColor.greyBackground,
       dialogTheme: DialogTheme(
           shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(10))));
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(10))),
+      floatingActionButtonTheme: const FloatingActionButtonThemeData(
+          backgroundColor: AppColor.greenDark, foregroundColor: Colors.white));
 }
