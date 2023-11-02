@@ -18,10 +18,10 @@ class CustomElevatedButton extends StatelessWidget {
       margin: const EdgeInsets.symmetric(horizontal: 20),
       child: ElevatedButton(
         onPressed: onPressed,
-        child: Text(text),
         style: ElevatedButton.styleFrom(
             shape:
                 RoundedRectangleBorder(borderRadius: BorderRadius.circular(6))),
+        child: Text(text),
       ),
     );
   }

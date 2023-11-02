@@ -36,7 +36,7 @@ class CustomTextField extends StatelessWidget {
       onTap: onTap,
       controller: controller,
       readOnly: readOnly ?? false,
-      style: TextStyle(color: context.theme.textColor, fontSize: fontSize),
+      style: TextStyle(fontSize: fontSize),
       textAlign: textAlign ?? TextAlign.center,
       keyboardType: readOnly == null ? keyboardType : null,
       onChanged: onChanged,

@@ -1,7 +1,6 @@
-import 'dart:developer';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:whatsapp_messenger/common/helper/show_alert_dialog.dart';
@@ -13,14 +12,65 @@ import 'package:whatsapp_messenger/common/routes/routes.dart';
 final authRepositoryProvider = Provider((ref) {
   return AuthRepository(
       firebaseAuth: FirebaseAuth.instance,
-      firestore: FirebaseFirestore.instance);
+      firestore: FirebaseFirestore.instance,
+      firebaseDatabase: FirebaseDatabase.instance);
 });
 
 class AuthRepository {
   final FirebaseAuth firebaseAuth;
   final FirebaseFirestore firestore;
+  final FirebaseDatabase firebaseDatabase;
 
-  AuthRepository({required this.firebaseAuth, required this.firestore});
+  AuthRepository(
+      {required this.firebaseAuth,
+      required this.firestore,
+      required this.firebaseDatabase});
+
+  Stream<UserModel> getUserPresenceStatus({required String uid}) {
+    return firestore
+        .collection('users')
+        .doc(uid)
+        .snapshots()
+        .map((event) => UserModel.fromMap(event.data()!));
+  }
+
+  void updateUserPresence() async {
+    Map<String, dynamic> online = {
+      'active': true,
+      "lastSeen": DateTime.now().millisecondsSinceEpoch
+    };
+
+    Map<String, dynamic> offline = {
+      'active': false,
+      "lastSeen": DateTime.now().millisecondsSinceEpoch
+    };
+
+    final connectedRef = firebaseDatabase.ref('.info/connected');
+    connectedRef.onValue.listen((event) async {
+      final isConnected = event.snapshot.value as bool? ?? false;
+
+      if (isConnected) {
+        await firebaseDatabase
+            .ref()
+            .child(firebaseAuth.currentUser!.uid)
+            .update(online);
+        await firestore
+            .collection('users')
+            .doc(firebaseAuth.currentUser!.uid)
+            .update(offline);
+      } else {
+        await firebaseDatabase
+            .ref()
+            .child(firebaseAuth.currentUser!.uid)
+            .onDisconnect()
+            .update(offline);
+        await firestore
+            .collection('users')
+            .doc(firebaseAuth.currentUser!.uid)
+            .update(offline);
+      }
+    });
+  }
 
   Future<UserModel?> getCurrentUserInfo() async {
     UserModel? user;
@@ -51,6 +101,7 @@ class AuthRepository {
       }
 
       UserModel user = UserModel(
+          lastSeen: DateTime.now().millisecondsSinceEpoch,
           username: username,
           uid: uid,
           avatarUrl: avatarUrl,

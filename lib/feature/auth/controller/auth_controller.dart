@@ -1,4 +1,3 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:whatsapp_messenger/common/models/user_modal.dart';
@@ -52,5 +51,13 @@ class AuthController {
   Future<UserModel?> getCurrentUserInfo() async {
     UserModel? user = await authRepository.getCurrentUserInfo();
     return user;
+  }
+
+  void updateUserPresence() {
+    return authRepository.updateUserPresence();
+  }
+
+  Stream<UserModel> getUserPresenceStatus({required String uid}) {
+    return authRepository.getUserPresenceStatus(uid: uid);
   }
 }

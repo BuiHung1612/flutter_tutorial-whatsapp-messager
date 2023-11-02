@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:whatsapp_messenger/common/extentions/custom_theme_extention.dart';
-import 'package:whatsapp_messenger/common/utils/colors.dart';
 
 class PrivacyAndTerms extends StatelessWidget {
   const PrivacyAndTerms({

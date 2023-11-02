@@ -5,6 +5,7 @@ class UserModel {
   final bool active;
   final String phoneNumber;
   final List<String> groupId;
+  final int lastSeen;
 
   UserModel(
       {required this.username,
@@ -12,7 +13,8 @@ class UserModel {
       required this.avatarUrl,
       required this.active,
       required this.phoneNumber,
-      required this.groupId});
+      required this.groupId,
+      required this.lastSeen});
 
   Map<String, dynamic> toMap() {
     return {
@@ -22,6 +24,7 @@ class UserModel {
       'active': active,
       'phoneNumber': phoneNumber,
       'groupId': groupId,
+      'lastSeen': lastSeen
     };
   }
 
@@ -32,6 +35,7 @@ class UserModel {
         avatarUrl: map['avatarUrl'] ?? '',
         active: map['active'] ?? false,
         phoneNumber: map['phoneNumber'] ?? '',
-        groupId: List<String>.from(map['groupId']));
+        groupId: List<String>.from(map['groupId']),
+        lastSeen: map['lastSeen'] ?? 0);
   }
 }

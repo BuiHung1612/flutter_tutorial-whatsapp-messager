@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:whatsapp_messenger/common/extentions/custom_theme_extention.dart';
 import 'package:whatsapp_messenger/common/routes/routes.dart';
-import 'package:whatsapp_messenger/common/utils/colors.dart';
 import 'package:whatsapp_messenger/common/widgets/custom_elevated_button.dart';
 import 'package:whatsapp_messenger/feature/welcome/widgets/language_button.dart';
 import 'package:whatsapp_messenger/feature/welcome/widgets/privacy_and_terms.dart';
@@ -28,7 +27,7 @@ class WelcomePage extends StatelessWidget {
               color: context.theme.circleImageColor,
             ),
           )),
-          Expanded(
+          const Expanded(
             child: Column(
               children: [
                 Text(
@@ -36,11 +35,10 @@ class WelcomePage extends StatelessWidget {
                   style: TextStyle(
                     fontSize: 22,
                     fontWeight: FontWeight.bold,
-                    color: context.theme.textColor,
                   ),
                 ),
-                const PrivacyAndTerms(),
-                const Padding(
+                PrivacyAndTerms(),
+                Padding(
                   padding: EdgeInsets.symmetric(horizontal: 120, vertical: 20),
                   child: LanguageButton(),
                 ),

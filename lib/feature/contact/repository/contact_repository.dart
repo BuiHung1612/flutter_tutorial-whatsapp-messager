@@ -40,6 +40,7 @@ class ContactRepository {
                   uid: '',
                   avatarUrl: '',
                   active: false,
+                  lastSeen: 0,
                   phoneNumber: contact.phones[0].number.replaceAll(' ', ''),
                   groupId: []));
             }

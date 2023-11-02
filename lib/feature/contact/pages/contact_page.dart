@@ -1,4 +1,3 @@
-import 'dart:developer';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
@@ -7,19 +6,26 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:whatsapp_messenger/common/extentions/custom_theme_extention.dart';
 import 'package:whatsapp_messenger/common/helper/show_alert_dialog.dart';
 import 'package:whatsapp_messenger/common/models/user_modal.dart';
+import 'package:whatsapp_messenger/common/routes/routes.dart';
 import 'package:whatsapp_messenger/common/utils/colors.dart';
 import 'package:whatsapp_messenger/common/widgets/custom_icon_button.dart';
 import 'package:whatsapp_messenger/feature/contact/controller/contacts_controller.dart';
-
-String? encodeQueryParameters(Map<String, String> params) {
-  return params.entries
-      .map((e) =>
-          '${Uri.encodeComponent(e.key)}=${Uri.encodeComponent(e.value)}')
-      .join('&');
-}
+import 'package:whatsapp_messenger/feature/contact/widgets/contact_card.dart';
 
 class ContactPage extends ConsumerWidget {
   const ContactPage({super.key});
+
+  shareSmsLink(String phoneNumber, BuildContext context) async {
+    Uri sms = Uri.parse(
+        "sms:${Platform.isAndroid ? phoneNumber : phoneNumber.replaceAll(' ', '-').replaceAll('+', '')}${Platform.isAndroid ? "?" : "&"}body=Let's chat on WhatsApp! it's a fast, simple, and secure app we can call each other for free. Get it at https://whatsappme.com/dl/");
+    try {
+      await launchUrl(sms);
+    } catch (e) {
+      if (context.mounted) {
+        showAlertDialog(context: context, message: e.toString());
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -70,46 +76,31 @@ class ContactPage extends ConsumerWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         if (index == 0)
-                          Padding(
-                            padding: const EdgeInsets.symmetric(
-                                vertical: 10, horizontal: 20),
-                            child: Text(
-                              'Contacts on WhatsApp',
-                              style: TextStyle(
-                                  fontWeight: FontWeight.w600,
-                                  color: context.theme.greyColor),
-                            ),
+                          Column(
+                            children: [
+                              myListTile(
+                                  leading: Icons.group, text: "New Group"),
+                              myListTile(
+                                  leading: Icons.contacts,
+                                  text: "New Contact",
+                                  trailing: Icons.qr_code),
+                              Padding(
+                                padding: const EdgeInsets.symmetric(
+                                    vertical: 10, horizontal: 20),
+                                child: Text(
+                                  'Contacts on WhatsApp',
+                                  style: TextStyle(
+                                      fontWeight: FontWeight.w600,
+                                      color: context.theme.greyColor),
+                                ),
+                              ),
+                            ],
                           ),
-                        ListTile(
-                          contentPadding: const EdgeInsets.only(
-                              left: 20, right: 10, top: 0, bottom: 0),
-                          leading: CircleAvatar(
-                              backgroundImage:
-                                  firebaseContacts.avatarUrl.isNotEmpty
-                                      ? NetworkImage(firebaseContacts.avatarUrl)
-                                      : null,
-                              backgroundColor:
-                                  context.theme.greyColor!.withOpacity(0.3),
-                              radius: 20,
-                              child: firebaseContacts.avatarUrl.isEmpty
-                                  ? const Icon(
-                                      Icons.person,
-                                      size: 30,
-                                    )
-                                  : null),
-                          title: Text(
-                            firebaseContacts.username,
-                            style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.w500,
-                                color: context.theme.greyColor),
-                          ),
-                          subtitle: Text(
-                            "Hey there! I'm using WhatsApp",
-                            style: TextStyle(
-                                color: context.theme.greyColor,
-                                fontWeight: FontWeight.w600),
-                          ),
+                        ContactCard(
+                          contactSource: firebaseContacts,
+                          onTap: () => Navigator.of(context).pushNamed(
+                              Routes.chat,
+                              arguments: firebaseContacts),
                         )
                       ],
                     )
@@ -127,48 +118,10 @@ class ContactPage extends ConsumerWidget {
                                     color: context.theme.greyColor),
                               ),
                             ),
-                          ListTile(
-                            onTap: () async {
-                              Uri sms = Uri.parse(
-                                  "sms:${Platform.isAndroid ? phoneContacts.phoneNumber : phoneContacts.phoneNumber.replaceAll(' ', '-')}${Platform.isAndroid ? "?" : "&"}body=Let's chat on WhatsApp! it's a fast, simple, and secure app we can call each other for free. Get it at https://whatsappme.com/dl/");
-
-                              await launchUrl(sms);
-                            },
-                            contentPadding: const EdgeInsets.only(
-                                left: 20, right: 10, top: 0, bottom: 0),
-                            leading: CircleAvatar(
-                                backgroundImage:
-                                    phoneContacts.avatarUrl.isNotEmpty
-                                        ? NetworkImage(phoneContacts.avatarUrl)
-                                        : null,
-                                backgroundColor:
-                                    context.theme.greyColor!.withOpacity(0.3),
-                                radius: 20,
-                                child: phoneContacts.avatarUrl.isEmpty
-                                    ? const Icon(
-                                        Icons.person,
-                                        size: 30,
-                                      )
-                                    : null),
-                            title: Text(
-                              phoneContacts.username,
-                              style: TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w500,
-                                  color: context.theme.greyColor),
-                            ),
-                            subtitle: Text(
-                              "Hey there! I'm using WhatsApp",
-                              style: TextStyle(
-                                  color: context.theme.greyColor,
-                                  fontWeight: FontWeight.w600),
-                            ),
-                            trailing: TextButton(
-                              onPressed: () {},
-                              style: TextButton.styleFrom(
-                                  foregroundColor: AppColor.greenDark),
-                              child: const Text("INVATE"),
-                            ),
+                          ContactCard(
+                            contactSource: phoneContacts,
+                            onTap: () => shareSmsLink(
+                                phoneContacts.phoneNumber, context),
                           )
                         ]);
             });
@@ -180,6 +133,29 @@ class ContactPage extends ConsumerWidget {
               color: context.theme.authAppbarTextColor),
         );
       }),
+    );
+  }
+
+  ListTile myListTile(
+      {required IconData leading, required String text, IconData? trailing}) {
+    return ListTile(
+      contentPadding: const EdgeInsets.only(top: 10, left: 20, right: 10),
+      leading: CircleAvatar(
+        radius: 20,
+        backgroundColor: AppColor.greenDark,
+        child: Icon(
+          leading,
+          color: Colors.white,
+        ),
+      ),
+      title: Text(
+        text,
+        style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+      ),
+      trailing: Icon(
+        trailing,
+        color: AppColor.greyDark,
+      ),
     );
   }
 }

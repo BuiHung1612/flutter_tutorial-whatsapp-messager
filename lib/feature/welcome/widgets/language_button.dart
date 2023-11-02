@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:whatsapp_messenger/common/extentions/custom_theme_extention.dart';
 import 'package:whatsapp_messenger/common/utils/colors.dart';
@@ -38,12 +36,12 @@ class LanguageButton extends StatelessWidget {
                     const SizedBox(
                       width: 10,
                     ),
-                    Text(
+                    const Text(
                       "Ngôn ngữ của ứng dụng",
                       style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 20,
-                          color: context.theme.textColor),
+                        fontWeight: FontWeight.bold,
+                        fontSize: 20,
+                      ),
                     )
                   ],
                 ),
@@ -59,9 +57,9 @@ class LanguageButton extends StatelessWidget {
                   groupValue: true,
                   onChanged: (value) {},
                   activeColor: AppColor.greenDark,
-                  title: Text(
+                  title: const Text(
                     "Tiếng việt",
-                    style: TextStyle(color: context.theme.textColor),
+                    style: TextStyle(),
                   ),
                   subtitle: Text(
                     "(Ngôn ngữ của thiết bị)",
@@ -73,9 +71,9 @@ class LanguageButton extends StatelessWidget {
                   groupValue: true,
                   onChanged: (value) {},
                   activeColor: AppColor.greenDark,
-                  title: Text(
+                  title: const Text(
                     "Afrikaans",
-                    style: TextStyle(color: context.theme.textColor),
+                    style: TextStyle(),
                   ),
                   subtitle: Text(
                     "Tiếng Afrikaans",
@@ -87,9 +85,9 @@ class LanguageButton extends StatelessWidget {
                   groupValue: true,
                   onChanged: (value) {},
                   activeColor: AppColor.greenDark,
-                  title: Text(
+                  title: const Text(
                     "Shqip",
-                    style: TextStyle(color: context.theme.textColor),
+                    style: TextStyle(),
                   ),
                   subtitle: Text(
                     "Tiếng Albania",
@@ -101,9 +99,9 @@ class LanguageButton extends StatelessWidget {
                   groupValue: true,
                   onChanged: (value) {},
                   activeColor: AppColor.greenDark,
-                  title: Text(
+                  title: const Text(
                     "Català",
-                    style: TextStyle(color: context.theme.textColor),
+                    style: TextStyle(),
                   ),
                   subtitle: Text(
                     "Tiếng Catalan",
@@ -115,9 +113,9 @@ class LanguageButton extends StatelessWidget {
                   groupValue: true,
                   onChanged: (value) {},
                   activeColor: AppColor.greenDark,
-                  title: Text(
+                  title: const Text(
                     "English",
-                    style: TextStyle(color: context.theme.textColor),
+                    style: TextStyle(),
                   ),
                   subtitle: Text(
                     "Tiếng Anh",
@@ -134,11 +132,11 @@ class LanguageButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return Material(
       borderRadius: BorderRadius.circular(20),
-      color: context.theme.langBtnBgColor,
+      color: context.theme.langBgColor,
       child: InkWell(
         borderRadius: BorderRadius.circular(20),
         splashFactory: NoSplash.splashFactory,
-        highlightColor: context.theme.langBtnHighlightColor,
+        highlightColor: context.theme.langHightlightColor,
         onTap: () => showBottomModal(context),
         child: const Padding(
           padding: EdgeInsets.all(4.0),

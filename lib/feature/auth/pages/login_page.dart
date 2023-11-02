@@ -54,7 +54,6 @@ class _LoginPageState extends ConsumerState<LoginPage> {
             borderRadius: BorderRadius.circular(20),
             textStyle: TextStyle(color: context.theme.greyColor),
             inputDecoration: InputDecoration(
-                labelStyle: TextStyle(color: context.theme.textColor),
                 prefixIcon: const Icon(
                   Icons.language,
                   color: AppColor.greenDark,
