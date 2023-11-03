@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
@@ -74,10 +76,12 @@ class AuthRepository {
 
   Future<UserModel?> getCurrentUserInfo() async {
     UserModel? user;
+
     final userInfo = await firestore
         .collection('users')
         .doc(firebaseAuth.currentUser?.uid)
         .get();
+
     if (userInfo.data() == null) return user;
     user = UserModel.fromMap(userInfo.data()!);
     return user;

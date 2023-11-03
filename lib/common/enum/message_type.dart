@@ -10,4 +10,21 @@ enum MessageType {
   const MessageType(this.type);
 }
 
-extension ConvertMessage on String {}
+extension ConvertMessage on String {
+  MessageType toEnum() {
+    switch (this) {
+      case 'text':
+        return MessageType.text;
+      case 'image':
+        return MessageType.image;
+      case 'audio':
+        return MessageType.audio;
+      case 'video':
+        return MessageType.video;
+      case 'gif':
+        return MessageType.gif;
+      default:
+        return MessageType.text;
+    }
+  }
+}

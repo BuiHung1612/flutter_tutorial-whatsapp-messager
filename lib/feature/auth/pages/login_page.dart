@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:country_picker/country_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -85,7 +87,10 @@ class _LoginPageState extends ConsumerState<LoginPage> {
     }
 
     ref.read(authControllerProvider).authRepository.sendSmsCode(
-        context: context, phoneNumber: "+$countryCode$phoneNumber");
+        context: context,
+        phoneNumber: phoneNumber.startsWith('0')
+            ? phoneNumber.replaceFirst('0', '+$countryCode')
+            : '+$countryCode$phoneNumber');
   }
 
   @override
