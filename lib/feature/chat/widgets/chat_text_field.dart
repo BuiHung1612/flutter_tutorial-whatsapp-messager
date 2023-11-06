@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:whatsapp_messenger/common/enum/message_type.dart';
 import 'package:whatsapp_messenger/common/extentions/custom_theme_extention.dart';
 import 'package:whatsapp_messenger/common/utils/colors.dart';
 import 'package:whatsapp_messenger/common/widgets/custom_icon_button.dart';
+import 'package:whatsapp_messenger/feature/auth/pages/image_picker_page.dart';
 import 'package:whatsapp_messenger/feature/chat/controllers/chat_controller.dart';
 
 class ChatTextField extends ConsumerStatefulWidget {
@@ -31,6 +33,32 @@ class _ChatTextFieldState extends ConsumerState<ChatTextField> {
       messageController.clear();
     }
 
+    await Future.delayed(const Duration(milliseconds: 100));
+    SchedulerBinding.instance.addPostFrameCallback((timeStamp) {
+      widget.scrollController.animateTo(
+          widget.scrollController.position.maxScrollExtent + 50,
+          duration: const Duration(milliseconds: 200),
+          curve: Curves.easeOut);
+    });
+  }
+
+  void sendImageMessageFromGallery() async {
+    final image = await Navigator.push(
+        context, MaterialPageRoute(builder: (_) => const ImagePickerPage()));
+    if (image != null) {
+      sendFileMessage(image, MessageType.image);
+      setState(() {
+        cardHeight = 0;
+      });
+    }
+  }
+
+  void sendFileMessage(var file, MessageType messageType) async {
+    ref.read(chatControllerProvider).sendFileMessage(
+        context: context,
+        file: file,
+        receiverId: widget.receiverId,
+        messageType: messageType);
     await Future.delayed(const Duration(milliseconds: 100));
     SchedulerBinding.instance.addPostFrameCallback((timeStamp) {
       widget.scrollController.animateTo(
@@ -110,7 +138,7 @@ class _ChatTextFieldState extends ConsumerState<ChatTextField> {
                           text: "Camera",
                           background: const Color(0xFF1FA855)),
                       iconWithText(
-                          onTap: () {},
+                          onTap: sendImageMessageFromGallery,
                           icon: Icons.photo,
                           text: "Gallery",
                           background: const Color(0xFF009DE1))

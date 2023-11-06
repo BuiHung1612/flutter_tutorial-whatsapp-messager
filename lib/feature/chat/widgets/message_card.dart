@@ -1,6 +1,7 @@
 import 'package:custom_clippers/custom_clippers.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
+import 'package:whatsapp_messenger/common/enum/message_type.dart'
+    as myMessageType;
 import 'package:whatsapp_messenger/common/extentions/custom_theme_extention.dart';
 import 'package:whatsapp_messenger/common/models/message_model.dart';
 
@@ -59,19 +60,15 @@ class MessageCard extends StatelessWidget {
                     ? CrossAxisAlignment.end
                     : CrossAxisAlignment.start,
                 children: [
-                  Padding(
-                    padding: const EdgeInsets.only(bottom: 5),
-                    child: Text(
-                      message.textMessage,
-                      style: const TextStyle(fontSize: 16),
-                    ),
-                  ),
-                  Text(
-                    DateFormat.Hm().format(message.timeSent),
-                    textAlign: isSender ? TextAlign.right : TextAlign.left,
-                    style:
-                        TextStyle(fontSize: 10, color: context.theme.greyColor),
-                  )
+                  message.type == myMessageType.MessageType.image
+                      ? Image.network(
+                          message.textMessage,
+                          fit: BoxFit.cover,
+                        )
+                      : Text(
+                          message.textMessage,
+                          style: const TextStyle(fontSize: 16),
+                        ),
                 ],
               )),
         ));

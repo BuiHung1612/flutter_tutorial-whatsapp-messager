@@ -8,6 +8,7 @@ import 'package:whatsapp_messenger/common/models/last_message_model.dart';
 import 'package:whatsapp_messenger/common/models/message_model.dart';
 import 'package:whatsapp_messenger/common/models/user_modal.dart';
 import 'package:uuid/uuid.dart';
+import 'package:whatsapp_messenger/common/repository/firebase_storage_repository.dart';
 
 final chatRepositoryProvider = Provider((ref) {
   return ChatRepository(
@@ -64,15 +65,67 @@ class ChatRepository {
     });
   }
 
+  void sendFileMessage(
+      {required BuildContext context,
+      required var file,
+      required String receiverId,
+      required UserModel senderData,
+      required Ref ref,
+      required MessageType messageType}) async {
+    try {
+      final timeSent = DateTime.now();
+      final messageId = const Uuid().v1();
+      final imageUrl = await ref
+          .read(firebaseStorageRepositoryProvider)
+          .storageFileToFirebase(
+              'chats/${messageType.type}/${senderData.uid}/$receiverId/$messageId',
+              file);
+      final userMap = await firestore.collection('users').doc(receiverId).get();
+      final receiverUserData = UserModel.fromMap(userMap.data()!);
+      String lastMessage;
+      switch (messageType) {
+        case MessageType.image:
+          lastMessage = ' Photo message';
+          break;
+        case MessageType.audio:
+          lastMessage = ' Voice message';
+          break;
+        case MessageType.video:
+          lastMessage = ' Video message';
+          break;
+        case MessageType.gif:
+          lastMessage = ' GIF message';
+          break;
+        default:
+          lastMessage = ' GIF message';
+          break;
+      }
+      saveToMessageCollection(
+          textMessage: imageUrl,
+          textMessageId: messageId,
+          timeSent: timeSent,
+          receiverId: receiverId,
+          senderUsername: senderData.username,
+          receiverUsername: receiverUserData.username,
+          messageType: messageType);
+
+      saveAsLastMessage(
+          senderUserData: senderData,
+          receiverUserData: receiverUserData,
+          lastMessage: lastMessage,
+          timeSent: timeSent,
+          receiverId: receiverId);
+    } catch (e) {
+      showAlertDialog(context: context, message: e.toString());
+    }
+  }
+
   void sendTextMessage(
       {required BuildContext context,
       required String textMessage,
       required String receiverId,
       required UserModel senderData}) async {
     try {
-      print(
-        'receiverId' + receiverId,
-      );
       final timeSent = DateTime.now();
       final receiverDataMap =
           await firestore.collection('users').doc(receiverId).get();
