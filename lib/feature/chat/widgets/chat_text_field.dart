@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:whatsapp_messenger/common/enum/message_type.dart';
 import 'package:whatsapp_messenger/common/extentions/custom_theme_extention.dart';
 import 'package:whatsapp_messenger/common/utils/colors.dart';
@@ -45,6 +46,16 @@ class _ChatTextFieldState extends ConsumerState<ChatTextField> {
   void sendImageMessageFromGallery() async {
     final image = await Navigator.push(
         context, MaterialPageRoute(builder: (_) => const ImagePickerPage()));
+    if (image != null) {
+      sendFileMessage(image, MessageType.image);
+      setState(() {
+        cardHeight = 0;
+      });
+    }
+  }
+
+  void sendImageMessageFromCamera() async {
+    final image = await ImagePicker().pickImage(source: ImageSource.camera);
     if (image != null) {
       sendFileMessage(image, MessageType.image);
       setState(() {
@@ -133,7 +144,7 @@ class _ChatTextFieldState extends ConsumerState<ChatTextField> {
                           text: "File",
                           background: const Color(0xFFF96533)),
                       iconWithText(
-                          onTap: () {},
+                          onTap: sendImageMessageFromCamera,
                           icon: Icons.camera_alt,
                           text: "Camera",
                           background: const Color(0xFF1FA855)),
